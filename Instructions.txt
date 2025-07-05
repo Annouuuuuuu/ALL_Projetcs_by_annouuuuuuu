@@ -1,0 +1,29 @@
+V0.0 Detecteur_plagiat_logique
+----------------------------------------------------------------------------
+Thank you for taking the time to download the contents of this branch.
+Here is the plagiarism detector in a zip and .pl file,
+the original code, submitted and submitted for evaluation.
+----------------------------------------------------------------------------
+By Annouuuuuuu
+----------------------------------------------------------------------------
+
+Instructions
+
+1. Prerequisite Installation
+Before running the program, make sure you have SWI-Prolog installed on your system.
+
+2. File Preparation
+• Place the plagiarism detector program in a directory of your choice.
+• Add the Prolog files you wish to compare to this same directory.
+
+3. Running the Detector
+• Launch the logical plagiarism detector by double-clicking on its file.
+• In the SWI-Prolog interface, enter the following query:
+
+detecter_plagiat_complet('programme1.pl', 'programme2.pl'). 
+
+4. Generated Results
+The program will produce a report containing three distinct indicators:
+• Signature Percentage: Measures the syntactic similarity between knowledge bases (facts).
+• Normalized Clause Percentage: Assesses the logical similarities between the defined rules and their structure in the different programs.
+• Overall Similarity Percentage: Represents the average of the two previous percentages.
