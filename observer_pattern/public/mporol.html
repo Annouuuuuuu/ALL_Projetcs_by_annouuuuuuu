@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observer Pattern - Messagerie</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .instance-id {
+            font-size: 14px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .listeners-control {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .listener-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .listener-toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .listener-toggle label {
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .messages-container {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.email {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+        }
+
+        .message.sms {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .message-content {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus {
+            border-color: #667eea;
+        }
+
+        .input-container button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .input-container button:hover {
+            transform: scale(1.05);
+        }
+
+        .input-container button:active {
+            transform: scale(0.95);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 18px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Observer Pattern - Messagerie</h1>
+            <div class="instance-id" id="instanceId"></div>
+        </div>
+
+        <div class="listeners-control">
+            <div class="listener-toggle">
+                <input type="checkbox" id="emailToggle" checked>
+                <label for="emailToggle">📧 Email Listener</label>
+            </div>
+            <div class="listener-toggle">
+                <input type="checkbox" id="smsToggle" checked>
+                <label for="smsToggle">📱 SMS Listener</label>
+            </div>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="empty-state">
+                <span style="font-size: 48px;">💬</span>
+                <p>Aucun message pour le moment</p>
+                <p style="font-size: 14px; margin-top: 10px;">Envoyez un message pour commencer</p>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Écrivez votre message...">
+            <button onclick="sendMessage()">Envoyer</button>
+        </div>
+    </div>
+
+    <script>
+        // Interface NotificationListener
+        class NotificationListener {
+            onNotification(message) {
+                throw new Error("Méthode abstraite - doit être implémentée");
+            }
+        }
+
+        // EmailListener
+        class EmailListener extends NotificationListener {
+            onNotification(message) {
+                addMessageToDOM(`📧 [Email] ${message}`, 'email');
+            }
+        }
+
+        // SmsWebListener
+        class SmsWebListener extends NotificationListener {
+            onNotification(message) {
+                addMessageToDOM(`📱 [SMS] ${message}`, 'sms');
+            }
+        }
+
+        // NotificationService
+        class NotificationService {
+            constructor() {
+                this.subscribers = [];
+            }
+
+            subscribe(listener) {
+                if (listener instanceof NotificationListener) {
+                    this.subscribers.push(listener);
+                }
+            }
+
+            unsubscribe(listener) {
+                this.subscribers = this.subscribers.filter(sub => sub !== listener);
+            }
+
+            sendNotification(message) {
+                this.subscribers.forEach(subscriber => {
+                    subscriber.onNotification(message);
+                });
+            }
+        }
+
+        // MainApplication
+        const instanceId = `Instance-${Math.random().toString(36).substr(2, 5)}`;
+        const service = new NotificationService();
+        const emailListener = new EmailListener();
+        const smsListener = new SmsWebListener();
+
+        // Initialisation
+        document.getElementById('instanceId').textContent = instanceId;
+
+        // Abonner les listeners par défaut
+        service.subscribe(emailListener);
+        service.subscribe(smsListener);
+
+        // Gestion des toggles
+        document.getElementById('emailToggle').addEventListener('change', function() {
+            if (this.checked) {
+                service.subscribe(emailListener);
+            } else {
+                service.unsubscribe(emailListener);
+            }
+        });
+
+        document.getElementById('smsToggle').addEventListener('change', function() {
+            if (this.checked) {
+                service.subscribe(smsListener);
+            } else {
+                service.unsubscribe(smsListener);
+            }
+        });
+
+        // Fonction pour ajouter un message au DOM
+        function addMessageToDOM(content, type) {
+            const container = document.getElementById('messagesContainer');
+            
+            // Retirer le message vide si présent
+            const emptyState = container.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date().toLocaleTimeString();
+            
+            messageDiv.appendChild(contentDiv);
+            messageDiv.appendChild(timeDiv);
+            container.appendChild(messageDiv);
+            
+            // Auto-scroll vers le bas
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Fonction pour envoyer un message
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const fullMessage = `${instanceId}: ${message}`;
+                service.sendNotification(fullMessage);
+                input.value = '';
+            }
+        }
+
+        // Envoyer avec Enter
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
