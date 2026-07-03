@@ -1,0 +1,34 @@
+Projet N°49 - Chiffrement Vernam Dynamique
+Exemples chiffrés et déchiffrés ( Contenu dans le rapport )
+
+>Test de Théorie de l'information<
+
+message1 = '10100100010000100101010010010010110111011111001100101101001001101111111010111001'
+message2 = '11011100000010011010110111110100111010011000101101100110110111111001100010001101'
+
+message1 = message2 = Hello World
+graine1 = test1 (40 bits)
+graine2 = test2
+
+>Test de chiffrement court<
+
+Message chiffré (en binaire) avec longueurs :
+  Mot 0 : 1101100101111011100110000000100100101010 (40 bits)
+  Mot 1 : 1010111000010100111010100110010101001110 (40 bits)
+Longueur totale du message chiffré : 80 bits
+
+Message déchiffré : 'Hello world'
+graine = motdepasse (80 bits)
+
+>Test de chiffrement - une phrase<
+
+Message chiffré (en binaire) avec longueurs :
+  Mot 0 : 1000101011100011010010100001000011100110000101101111100010010111 (64 bits)
+  Mot 1 : 111110011001011000111000 (24 bits)
+  Mot 2 : 1001010111110111 (16 bits)
+  Mot 3 : 11110110100110000101010001111100100011110111100010011101 (56 bits)
+Longueur totale du message chiffré : 160 bits
+
+Message déchiffré : 'Cerisier sur la colline'
+graine = fruits (48 bits)
+
